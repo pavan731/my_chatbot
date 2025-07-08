@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "export": "next export",
-  "deploy": "npm run build && npm run export"
+    "dev": "next dev",
+    "build": "next build",
+    "export": "next export",
+    "deploy": "npm run build && npm run export"
   },
-
   "dependencies": {
     "google-auth-library": "^10.1.0",
     "mysql2": "^3.14.1",
@@ -23,6 +22,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "tailwindcss": "^4",
