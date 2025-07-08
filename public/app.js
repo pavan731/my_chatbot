@@ -1,8 +1,14 @@
+// Dynamically load marked.js
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+script.onload = () => console.log('✅ Marked loaded');
+document.head.appendChild(script);
+
 function sendQuestion() {
   const questionInput = document.getElementById('question-input');
   const chatBox = document.getElementById('chat-box');
   const question = questionInput.value.trim();
-  const prompt = "You are a data analyst. Please answer the question accordingly, and format your response in markdown for clarity.";
+  const prompt = "You are a DevOps assistant. Please answer the question accordingly, and format your response in markdown for clarity.";
 
   if (!question) return;
 
@@ -24,9 +30,12 @@ function sendQuestion() {
     .then(data => {
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-message bot-message';
+
+      const markdown = typeof marked !== 'undefined' ? marked.parse : (text) => text;
       botMsg.innerHTML = data.answer
-        ? marked.parse(data.answer)
+        ? markdown(data.answer)
         : "Something went wrong. Please try again.";
+
       chatBox.appendChild(botMsg);
 
       // Add copy buttons to code blocks

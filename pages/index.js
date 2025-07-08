@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Script from 'next/script';
+import '../public/style.css'; // ✅ Import CSS properly
 
 export default function Home() {
   const suggestedPrompts = [
@@ -13,10 +14,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Chatbot</title>
+        <title>DevOps Support Chatbot</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/style.css" />
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
       </Head>
 
       <div className="chatgpt-container">
