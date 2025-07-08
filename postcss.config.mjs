@@ -1,5 +1,10 @@
-const config = {
-  plugins: ["@tailwindcss/postcss"],
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  basePath: '/my_chatbot',
+  images: {
+    unoptimized: true,
+  },
 };
 
-export default config;
+module.exports = nextConfig;
