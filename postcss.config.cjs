@@ -1,10 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  basePath: '/my_chatbot',
-  images: {
-    unoptimized: true,
+// ✅ Correct PostCSS config
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
   },
 };
-
-module.exports = nextConfig;
