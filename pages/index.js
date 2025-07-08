@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import '../public/style.css'; // ✅ Import CSS properly
 
 export default function Home() {
   const suggestedPrompts = [
