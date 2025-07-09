@@ -33,12 +33,21 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-south-1
 
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.6 
+
+
     - name: Apply Terraform
       working-directory: terraform
       run: |
         terraform init
         terraform apply -auto-approve
 
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+      
     - name: Deploy to EKS
       run: |
         aws eks --region ap-south-1 update-kubeconfig --name nextjs-eks-cluster
