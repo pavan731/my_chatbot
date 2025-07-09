@@ -1,4 +1,4 @@
-name: Deploy to ec2 using github-actions
+name: Deploy to EC2 using GitHub Actions
 
 on:
   push:
@@ -9,13 +9,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name:  Checkout Code
+    - name: 🧾 Checkout Source Code
       uses: actions/checkout@v3
 
-    
-        
-
-    - name:  Configure AWS Credentials
+    - name: 🔐 Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -27,16 +24,13 @@ jobs:
       with:
         terraform_version: 1.6.6
 
-
-    - name:  Apply Terraform
+    - name: 🛠 Terraform Init and Apply
       working-directory: terraformec2
       env:
-        TF_VAR_aws_region: ap-south-1
+        TF_VAR_aws_region: us-east-1
         TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         TF_VAR_gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
       run: |
         terraform init
         terraform apply -auto-approve
-
-    
