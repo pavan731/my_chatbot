@@ -11,7 +11,7 @@ resource "tls_private_key" "terraform_key" {
 
 # Create an AWS key pair using the generated public key
 resource "aws_key_pair" "terraform_key" {
-  key_name   = "jenkins-key"
+  key_name   = "jcicd-key"
   public_key = tls_private_key.terraform_key.public_key_openssh
 }
 
