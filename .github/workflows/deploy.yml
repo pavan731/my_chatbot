@@ -23,8 +23,8 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t pavanrr/nextjs-app .
-        docker push pavanrr/nextjs-app
+        docker build -t pavanrr/concu .
+        docker push pavanrr/concu
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -42,13 +42,13 @@ jobs:
     - name: Apply Terraform
       working-directory: terraform
       env:
-        AWS_REGION: ap-south-1
         TF_VAR_aws_region: ap-south-1
         TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         terraform init
         terraform apply -auto-approve
+
 
 
     - name: Set up kubectl

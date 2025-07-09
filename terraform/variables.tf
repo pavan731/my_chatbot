@@ -1,4 +1,5 @@
 variable "aws_region" {
+  type    = string
   default = "ap-south-1"
 }
 
@@ -11,6 +12,7 @@ variable "aws_secret_key" {
   type      = string
   sensitive = true
 }
+
 
 variable "profile" {
   default = "default"
