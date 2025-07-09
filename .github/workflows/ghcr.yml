@@ -20,6 +20,8 @@ jobs:
         docker build -t ghcr.io/pavan731/nextjs-app:latest .
         docker push ghcr.io/pavan731/nextjs-app:latest
 
+        
+
     # - name:  Configure AWS Credentials
     #   uses: aws-actions/configure-aws-credentials@v2
     #   with:
