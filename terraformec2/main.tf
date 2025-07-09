@@ -61,24 +61,26 @@ provisioner "file" {
 
  provisioner "remote-exec" {
   inline = [
-    "sudo apt update -y",
-    "sudo apt install -y curl docker.io git",
+    <<-EOT
+      set -e
+      sudo apt update -y
+      sudo apt install -y curl docker.io git
 
-    "sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose",
-    "sudo chmod +x /usr/local/bin/docker-compose",
+      sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+      sudo chmod +x /usr/local/bin/docker-compose
 
-    # Clean up any previous clone
-    "rm -rf my_chatbot.io",
-    "git clone https://github.com/pavan731/my_chatbot.io.git",
-    "cd my_chatbot.io",
+      # Clean repo clone and run
+      rm -rf my_chatbot.io
+      git clone https://github.com/pavan731/my_chatbot.io.git
+      cd my_chatbot.io
 
-    # Inject env file
-    "echo 'GEMINI_API_KEY=${var.gemini_api_key}' > .env.local",
+      echo "GEMINI_API_KEY=${var.gemini_api_key}" > .env.local
 
-    # Run app with Compose
-    "sudo docker-compose --env-file .env.local up -d --build"
+      sudo docker-compose --env-file .env.local up -d --build
+    EOT
   ]
 }
+
 
 
 
