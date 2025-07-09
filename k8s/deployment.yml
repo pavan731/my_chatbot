@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nextjs
-        image: pavanrr/nextjs-app
+        image: pavanrr/concu
         ports:
         - containerPort: 3000
         env:
