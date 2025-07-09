@@ -41,13 +41,19 @@ jobs:
 
     - name: Apply Terraform
       working-directory: terraform
+      env:
+        AWS_REGION: ap-south-1
+        TF_VAR_aws_region: ap-south-1
+        TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         terraform init
         terraform apply -auto-approve
 
+
     - name: Set up kubectl
       uses: azure/setup-kubectl@v1
-      
+
     - name: Deploy to EKS
       run: |
         aws eks --region ap-south-1 update-kubeconfig --name nextjs-eks-cluster
