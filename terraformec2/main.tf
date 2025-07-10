@@ -28,6 +28,35 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+  from_port   = 9090
+  to_port     = 9090
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"] # Prometheus
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Grafana
+  }
+
+  ingress {
+    from_port   = 9323
+    to_port     = 9323
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Docker metrics endpoint
+  }
+
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Node Exporter (optional)
+  }
+
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -65,7 +94,11 @@ provisioner "remote-exec" {
     "echo \"${var.github_token}\" | sudo docker login ghcr.io -u pavan731 --password-stdin",
     "sudo docker pull ghcr.io/pavan731/next-app:latest",
     "sudo git clone https://github.com/pavan731/my_chatbot.io.git /home/ubuntu/my_chatbot.io",
+    "echo '{\"metrics-addr\": \"0.0.0.0:9323\", \"experimental\": true}' | sudo tee /etc/docker/daemon.json",
+    "sudo systemctl restart docker",
     "sudo docker-compose -f /home/ubuntu/my_chatbot.io/Docker-compose.yml up -d"
+
+    # "sudo docker-compose -f /home/ubuntu/my_chatbot.io/Docker-compose.yml up -d"
     #"sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest"
   ]
 }
