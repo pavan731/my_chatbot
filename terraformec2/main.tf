@@ -7,7 +7,7 @@ resource "tls_private_key" "terraform_key" {
 }
 
 resource "aws_key_pair" "terraform_key" {
-  key_name   = "wcicd-key"
+  key_name   = "ucicd-key"
   public_key = tls_private_key.terraform_key.public_key_openssh
 }
 
