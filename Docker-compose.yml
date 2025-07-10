@@ -1,19 +1,24 @@
-version: '3.9'
-
+version: "3.8"
 services:
-  chatbot:
-    container_name: my-chatbot
-    build:
-      context: .
-      dockerfile: Dockerfile
+  next-app:
+    image: ghcr.io/pavan731/next-app:latest
+    env_file:
+      - /home/ubuntu/.env.local
     ports:
       - "80:3000"
-    env_file:
-      - .env.local
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
-      
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - backend
+
+networks:
+  backend:

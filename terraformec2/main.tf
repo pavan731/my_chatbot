@@ -7,7 +7,7 @@ resource "tls_private_key" "terraform_key" {
 }
 
 resource "aws_key_pair" "terraform_key" {
-  key_name   = "ucicd-key"
+  key_name   = "scicd-key"
   public_key = tls_private_key.terraform_key.public_key_openssh
 }
 
@@ -64,7 +64,9 @@ provisioner "remote-exec" {
     "sudo systemctl start docker",
     "echo \"${var.github_token}\" | sudo docker login ghcr.io -u pavan731 --password-stdin",
     "sudo docker pull ghcr.io/pavan731/next-app:latest",
-    "sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest"
+    "sudo git clone https://github.com/pavan731/my_chatbot.io.git /home/ubuntu/my_chatbot.io",
+    "sudo docker-compose -f /home/ubuntu/my_chatbot.io/Docker-compose.yml up -d"
+    #"sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest"
   ]
 }
 
