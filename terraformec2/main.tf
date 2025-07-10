@@ -62,7 +62,7 @@ provisioner "remote-exec" {
     "sudo chmod +x /usr/local/bin/docker-compose",
     "sudo apt update -y",
     "sudo systemctl start docker",
-    "echo \\\"${var.new_token}\\\" | docker login ghcr.io -u pavan731 --password-stdin",
+    "echo \"${var.github_token}\" | sudo docker login ghcr.io -u pavan731 --password-stdin",
     "sudo docker pull ghcr.io/pavan731/next-app:latest",
     "sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest"
   ]

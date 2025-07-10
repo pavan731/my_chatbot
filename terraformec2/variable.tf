@@ -4,7 +4,7 @@ variable "gemini_api_key" {
   sensitive   = false
 }
 
-variable "new_token" {
+variable "github_token" {
   description = "GitHub token for authenticating with GHCR"
   type        = string
   sensitive   = false
