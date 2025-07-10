@@ -7,7 +7,7 @@ resource "tls_private_key" "terraform_key" {
 }
 
 resource "aws_key_pair" "terraform_key" {
-  key_name   = "cicd-key"
+  key_name   = "wcicd-key"
   public_key = tls_private_key.terraform_key.public_key_openssh
 }
 
@@ -54,28 +54,20 @@ resource "aws_instance" "example_instance" {
     destination = "/home/ubuntu/.env.local"
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      <<-EOF
-        set -e
+provisioner "remote-exec" {
+  inline = [
+    "sudo apt update -y",
+    "sudo apt install -y curl docker.io",
+    "sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose",
+    "sudo chmod +x /usr/local/bin/docker-compose",
+    "sudo apt update -y",
+    "sudo systemctl start docker",
+    "echo \"${var.github_token}\" | sudo docker login ghcr.io -u pavan731 --password-stdin",
+    "sudo docker pull ghcr.io/pavan731/next-app:latest",
+    "sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest"
+  ]
+}
 
-        # Install Docker and Compose
-        sudo apt update -y
-        sudo apt install -y curl docker.io
-
-        sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
-        sudo systemctl start docker
-
-        # Login to GHCR
-        echo "${var.github_token}" | sudo docker login ghcr.io -u pavan731 --password-stdin
-
-        # Pull and run image
-        sudo docker pull ghcr.io/pavan731/next-app:latest
-        sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest
-      EOF
-    ]
-  }
 
   tags = {
     Name = "CI-CD-instance"
