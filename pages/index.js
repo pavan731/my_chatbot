@@ -19,7 +19,7 @@ export default function Home() {
 
       <div className="chatgpt-container">
         <header>
-          <h1>ai Support Chatbot</h1>
+          <h1>DevOps Support Chatbot</h1>
         </header>
 
         <main>
