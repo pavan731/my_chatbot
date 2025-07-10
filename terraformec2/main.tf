@@ -7,7 +7,7 @@ resource "tls_private_key" "terraform_key" {
 }
 
 resource "aws_key_pair" "terraform_key" {
-  key_name   = "xcicd-key"
+  key_name   = "ucicd-key"
   public_key = tls_private_key.terraform_key.public_key_openssh
 }
 
@@ -62,7 +62,7 @@ provisioner "remote-exec" {
     "sudo chmod +x /usr/local/bin/docker-compose",
     "sudo apt update -y",
     "sudo systemctl start docker",
-    "echo \"${GHCR_PAT}\" | docker login ghcr.io -u pavan731 --password-stdin",
+    "echo \\\"${var.new_token}\\\" | docker login ghcr.io -u pavan731 --password-stdin",
     "sudo docker pull ghcr.io/pavan731/next-app:latest",
     "sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest"
   ]
