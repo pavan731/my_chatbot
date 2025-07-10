@@ -1,17 +1,13 @@
 provider "aws" {
-  region = "us-east-1"  # Change this to your desired region
+  region = "us-east-1"
 }
 
-
-
-#Generate an SSH key pair
 resource "tls_private_key" "terraform_key" {
   algorithm = "RSA"
 }
 
-# Create an AWS key pair using the generated public key
 resource "aws_key_pair" "terraform_key" {
-  key_name   = "jcicd-key"
+  key_name   = "cicd-key"
   public_key = tls_private_key.terraform_key.public_key_openssh
 }
 
@@ -22,7 +18,7 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP range for better security
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -41,57 +37,53 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_instance" "example_instance" {
-  ami           = "ami-084568db4383264d4"  # A linux
-  instance_type = "t2.micro"
-  key_name      = aws_key_pair.terraform_key.key_name
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id] # Attach the security group
+  ami                    = "ami-084568db4383264d4"
+  instance_type          = "t2.micro"
+  key_name               = aws_key_pair.terraform_key.key_name
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
 
-  # Connection block for SSH
   connection {
     type        = "ssh"
-    user        = "ubuntu"  # Default user for Amazon Linux 2
+    user        = "ubuntu"
     private_key = tls_private_key.terraform_key.private_key_pem
     host        = self.public_ip
   }
 
-provisioner "file" {
-  content     = templatefile("${path.module}/env.tpl", { gemini_api_key = var.gemini_api_key })
-  destination = "/home/ubuntu/my_chatbot.io/.env.local"
-}
+  provisioner "file" {
+    content     = templatefile("${path.module}/env.tpl", { gemini_api_key = var.gemini_api_key })
+    destination = "/home/ubuntu/.env.local"
+  }
 
- provisioner "remote-exec" {
-  inline = [
-    <<-EOT
-      set -e
-      sudo apt update -y
-      sudo apt install -y curl docker.io git
+  provisioner "remote-exec" {
+    inline = [
+      <<-EOF
+        set -e
 
-      sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-      sudo chmod +x /usr/local/bin/docker-compose
+        # Install Docker and Compose
+        sudo apt update -y
+        sudo apt install -y curl docker.io
 
-      # Clean repo clone and run
-      rm -rf my_chatbot.io
-      git clone https://github.com/pavan731/my_chatbot.io.git
-      cd my_chatbot.io
+        sudo curl -L https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        sudo systemctl start docker
 
-      echo "GEMINI_API_KEY=${var.gemini_api_key}" > .env.local
+        # Login to GHCR
+        echo "${var.github_token}" | sudo docker login ghcr.io -u pavan731 --password-stdin
 
-      sudo docker-compose --env-file .env.local up -d --build
-    EOT
-  ]
-}
-
-
-
-
+        # Pull and run image
+        sudo docker pull ghcr.io/pavan731/next-app:latest
+        sudo docker run --env-file /home/ubuntu/.env.local -d -p 80:3000 ghcr.io/pavan731/next-app:latest
+      EOF
+    ]
+  }
 
   tags = {
     Name = "CI-CD-instance"
   }
 }
 
-
-
 output "instance_ip" {
   value = aws_instance.example_instance.public_ip
 }
+
+

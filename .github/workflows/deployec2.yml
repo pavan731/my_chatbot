@@ -1,36 +1,54 @@
-name: Deploy to EC2 using GitHub Actions
+name: Build and Deploy via Terraform
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build-and-deploy:
+  build-and-push-image:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 🧾 Checkout Source Code
+    - name: Checkout Source Code
       uses: actions/checkout@v3
 
-    - name: 🔐 Configure AWS Credentials
+    - name: Login to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Build Docker Image
+      run: docker build -t ghcr.io/pavan731/next-app:latest .
+
+    - name: Push Docker Image
+      run: docker push ghcr.io/pavan731/next-app:latest
+
+  provision-with-terraform:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Infrastructure Code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: 📦 Set up Terraform
+    - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.6.6
 
-    - name: 🛠 Terraform Init and Apply
+    - name: 🛠 Apply Terraform Config
       working-directory: terraformec2
       env:
         TF_VAR_aws_region: us-east-1
         TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         TF_VAR_gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+        TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
       run: |
         terraform init
         terraform apply -auto-approve
