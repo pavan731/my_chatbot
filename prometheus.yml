@@ -9,6 +9,7 @@ scrape_configs:
       - targets: ['localhost:9090']
 
   # Scrape metrics from Next.js app (if it exposes metrics)
-  - job_name: 'next-app'
+  - job_name: 'next-api'
     static_configs:
-      - targets: ['next-app:3000']
+      - targets: ['next-app:80']
+
