@@ -49,7 +49,7 @@ jobs:
         TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         TF_VAR_gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
-        TF_VAR_new_token: ${{ secrets.NEW_TOKEN }}
+        TF_VAR_github_token: ${{ secrets.NEW_TOKEN }}
       run: |
         terraform init
         terraform apply -auto-approve
